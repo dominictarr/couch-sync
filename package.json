@@ -1,11 +1,15 @@
 { "name": "couch-sync"
-, "version": "0.0.0"
+, "version": "0.0.1"
 , "description": ""
 , "homepage": "http://github.com/dominictarr/couch-sync"
 , "repository": 
   { "type": "git"
   , "url": "https://github.com/dominictarr/couch-sync.git" }
-, "dependencies": {}
+, "dependencies": {
+    "json-rest": "1",
+    "assertions": "2.2",
+    "follow" : "0.4"
+  }
 , "devDependencies": {}
 , "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)"
 , "scripts": { "test": "meta-test test/*.js" } }

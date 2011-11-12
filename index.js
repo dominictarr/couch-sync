@@ -6,10 +6,12 @@ var http = require ('http')
   , a = require('assertions')
   
   
-//given a view and a filter, 
-// retrive the current values and check that they are uptodate
 //
-// given document, 
+// this currently will check that the view and the filter are correct in the database, 
+// and will update them if they are different. this should be it's own module.
+// there is a lot of work that could be done to make that better, like parse the functions
+// and do not update if only white space change.
+// and maybe use a semver?
 
 module.exports = function (opts) {
   var couch = jrest({ url: opts.url, auth: opts.auth });
@@ -37,6 +39,7 @@ module.exports = function (opts) {
     }, function (err, data) {
       if(err && err.error == 'not_found') { //doc doesn't exist, create it.
         couch({
+          path: '/' + doc._id,
           json: doc,
           method: 'PUT'
         }, function (err, data) {
@@ -48,10 +51,11 @@ module.exports = function (opts) {
         try {
           a.has(data, d) 
         } catch (err) { //it's changed
-          console.error(err.message)
           d._rev = data._rev
           return couch({
-            method: 'POST', json: d
+            path: '/' + doc._id,
+            method: 'POST', 
+            json: d
           }, function (err, data) {
             callback(err, data)
           })
@@ -91,15 +95,12 @@ module.exports = function (opts) {
       .replace('$FILTER', (parts.filter || null).toString())
       .replace('$MAP', parts.map.toString())+')')
 
-//    console.error(mapper.toString())
-
       couch({
         path: '/_design/' + parts.name + '/_view/' + parts.name + '?update_seq=true'
       }, function (err, data) {
-        if(err) {console.error(err); return emitter.emit('error', err)}
-          //return emitter.emit('error', err)
+        if(err) return emitter.emit('error', err)
         var seq = data.update_seq
-        console.error('SEQ', seq)
+
         data.rows.forEach(function (row) {
           emitter.emit('data', row.value)
         })

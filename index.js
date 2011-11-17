@@ -43,7 +43,7 @@ module.exports = function (opts) {
           json: doc,
           method: 'PUT'
         }, function (err, data) {
-          console.error(err, data)
+          callback(err, data)
         })
       } else {
         //check if the doc has changed...
@@ -54,7 +54,7 @@ module.exports = function (opts) {
           d._rev = data._rev
           return couch({
             path: '/' + doc._id,
-            method: 'POST', 
+            method: 'PUT', 
             json: d
           }, function (err, data) {
             callback(err, data)
@@ -75,9 +75,10 @@ module.exports = function (opts) {
   function syncView (parts) {
     var emitter = new EventEmitter ()
 
-    sync(makeDesign(parts), function () {
+    sync(makeDesign(parts), function (err) {
     //retrive the view...
-
+    if(err)
+      return emitter.emit('error', err)
     var viewSrc = function (doc) {
       var _val  
       function emit (key, val) {

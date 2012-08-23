@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/dominictarr/couch-sync.png)](http://travis-ci.org/dominictarr/couch-sync)
 # couch-sync
 
 this is like following a view!
